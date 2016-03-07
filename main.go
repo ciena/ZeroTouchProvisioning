@@ -28,6 +28,7 @@ func main() {
 	var buf bytes.Buffer
 
 	logger := log.New(&buf, "AUTOCONFIG: ", log.Ltime)
+	logger.Println("logger initialized")
 
 	config := &ssh.ClientConfig{
 		User: *user,
@@ -41,7 +42,7 @@ func main() {
 	}
 
 	cmd1 := "Working on... Hostname: " + *host + " with DPID: " + *dpid + " IP: " + *ip
-	logger.Println(cmd1)
+	fmt.Println(cmd1)
 	scpCmd := "scp"
 
 	cmdRC := "echo dpkg -i --force-overwrite /mnt/flash2/ofdpa-i.12.1.1_12.1.1+accton1.7-1_amd64.deb > /etc/rc.local"
@@ -89,22 +90,22 @@ func main() {
 
 			err = scp.CopyPath(src, dst, session)
 			if _, err := os.Stat(src); os.IsNotExist(err) {
-				logger.Printf("no such file or directory: %s", src)
+				fmt.Printf("no such file or directory: %s", src)
 				panic(err)
 			} else {
-				logger.Println("SCP Success")
+				fmt.Println("SCP Success")
 				continue
 			}
 
 		}
 
-		logger.Println(" RUNNING: " + cmd)
+		fmt.Println(" RUNNING: " + cmd)
 		if cmd == connect {
 			session.Run(cmd)
 
 		} else {
 			if err := session.Run(cmd); err != nil {
-				logger.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
+				fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
 			}
 
 		}
@@ -114,7 +115,7 @@ func main() {
 		if cmdNumber < 1 {
 			fmt.Println(rpl[:5])
 			if rpl[:5] == "found" {
-				logger.Println("Switch is already configured!")
+				fmt.Println("Switch is already configured!")
 				break
 			}
 
