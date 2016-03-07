@@ -333,7 +333,7 @@ def harvest(options):
                     print("FABRIC: GOT A HIT FOR '%s' \n" %(resp['lease']['hardware']) )
                     sip = resp['lease']['ip_address']
                     d=switch_list[resp['lease']['hardware']]
-                    call(["./switchGo", "--ip="+sip, "--hostname="+d[0], "--dpid="+d[1] ])
+                    call(["./switchGo", "--ip="+sip, "--hostname="+d[0], "--dpid="+d[1], "--onosip="+options.onos_ip ])
 
             else:
                 print("INFO: dropping host '%s' with address '%s' (not verified)" % (resp['lease']['client-hostname'], resp['lease']['ip_address']))
@@ -494,6 +494,8 @@ def main():
         help="specifieds a minimum quiet period between actually harvest times.")
     parser.add_option('-w', '--workers', dest='worker_count', type='int', default=5,
         help="specifies the number of workers to use when verifying IP addresses")
+    parser.add_option('-o', '--onosip', dest='onos_ip', type='string', default='10.1.0.1',
+        help="specifies ONOS IP address for the pod")
 
     (options, args) = parser.parse_args()
 

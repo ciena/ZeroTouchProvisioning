@@ -10,9 +10,9 @@ import (
 	"os"
 )
 
-const (
-	onosIP = "10.0.0.1"
-)
+// const (
+// 	onosIP = "10.0.0.1"
+// )
 
 func main() {
 
@@ -21,6 +21,7 @@ func main() {
 	dpid := flag.String("dpid", "", "DPID of the switch")
 	user := flag.String("user", "root", "Username for the switch login")
 	password := flag.String("password", "onl", "Password for the switch login")
+	onosIP := flag.String("onosip", "10.1.0.1", "ONOS controller IP")
 
 	flag.Parse()
 
@@ -48,7 +49,7 @@ func main() {
 	cmdRChost := "echo " + hostnameString + " >> /etc/rc.local"
 	cmdRCexit := "echo exit 0 >> /etc/rc.local"
 
-	connect := "brcm-indigo-ofdpa-ofagent --dpid=" + *dpid + " --controller=" + onosIP
+	connect := "brcm-indigo-ofdpa-ofagent --dpid=" + *dpid + " --controller=" + *onosIP
 
 	cmds := []string{"test -e /etc/.configured && echo 'found' || echo 'notFound'",
 		"persist /etc/network/interfaces",
