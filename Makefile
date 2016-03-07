@@ -4,8 +4,14 @@ build:
 image:
 	sudo docker build -t cord/fabricdhcpharvester .
 
-run:
-	sudo docker-compose -f harvest-compose.yml up
+run1:
+	sudo docker-compose -f harvest-compose-1.yml up
 
-runquiet:
-	sudo docker-compose -f harvest-compose.yml up -d
+run2:
+	sudo docker-compose -f harvest-compose-2.yml up
+
+runquiet1:
+	sudo docker-compose -f harvest-compose-1.yml up -d
+
+runquiet2:
+	sudo docker-compose -f harvest-compose-2.yml up -d
