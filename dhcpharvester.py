@@ -180,7 +180,8 @@ def parse_reservation_file(res_file):
     for res in res_db:
         results.append({
             'client-hostname'   : res_db[res][0]['hostname'],
-            'ip_address' : res_db[res][0]['fixed-address'],
+            'hardware'          : res_db[res][0]['hardware'],
+            'ip_address'        : res_db[res][0]['fixed-address'],
             }) 
     return results
         
@@ -385,7 +386,7 @@ def harvest(options):
     myfile.close()
     
 
-    reservations = None
+    reservations = []
     try:
         with open(options.reservations, 'r') as res_file:
             reservations = parse_reservation_file(res_file)

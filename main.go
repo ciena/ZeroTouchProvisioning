@@ -100,14 +100,18 @@ func main() {
 		}
 
 		fmt.Println(" RUNNING: " + cmd)
-		if cmd == connect {
-			session.Run(cmd)
-
+		if cmd == "savepersist" {
+			session.Run(cmd) //savepersist returns error even if it succeeds (ONL bug)
+		} else if cmd == connect {
+			go func() {
+				if err := session.Run(cmd); err != nil {
+					fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
+				}
+			}()
 		} else {
 			if err := session.Run(cmd); err != nil {
 				fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
 			}
-
 		}
 
 		rpl := b.String()
