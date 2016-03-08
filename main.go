@@ -105,6 +105,7 @@ func main() {
 			session.Run(cmd) //savepersist returns error even if it succeeds (ONL bug)
 		} else if cmd == connect {
 			go func() {
+				fmt.Println(" RUNNING: " + connect)
 				session.Run(cmd)
 			}()
 		} else {
@@ -132,6 +133,7 @@ func main() {
 				fmt.Println("Switch is configured but not connected to ONOS, connecting now...")
 
 				go func() {
+					fmt.Println(" RUNNING: " + connect)
 					session.Run(connect)
 				}()
 
@@ -141,17 +143,18 @@ func main() {
 					panic("Failed to create session: " + err.Error())
 				}
 				defer session.Close()
+				fmt.Println(" RUNNING: " + connd)
 				if err := session.Run(connd); err != nil {
 					fmt.Println("Failed to run cmd: " + connd + " ERROR: " + err.Error())
 				}
 
 			}
 
+			break
+
 		}
 
-		if cmdNumber == 2 {
-			break
-		}
+	
 
 	}
 
