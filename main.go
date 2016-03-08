@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"log"
 	"os"
+	"time"
 )
 
 // const (
@@ -108,6 +109,8 @@ func main() {
 				fmt.Println(" RUNNING: " + connect)
 				session.Run(cmd)
 			}()
+			time.Sleep(2 * time.Second)
+
 		} else {
 			if err := session.Run(cmd); err != nil {
 				fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
@@ -137,6 +140,8 @@ func main() {
 					session.Run(connect)
 				}()
 
+				time.Sleep(2 * time.Second)
+
 				connd := "touch /etc/.connected"
 				session, err := client.NewSession()
 				if err != nil {
@@ -153,8 +158,6 @@ func main() {
 			break
 
 		}
-
-	
 
 	}
 
