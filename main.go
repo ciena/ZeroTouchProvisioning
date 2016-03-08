@@ -51,9 +51,11 @@ func main() {
 	cmdRCexit := "echo exit 0 >> /etc/rc.local"
 
 	connect := "brcm-indigo-ofdpa-ofagent --dpid=" + *dpid + " --controller=" + *onosIP
+	connd := "pwd"
 
 	cmds := []string{"test -e /etc/.configured && echo 'found' || echo 'notFound'",
 		"test -e /etc/.connected && echo 'connected' || echo 'notConnected'",
+		connd,
 		"persist /etc/network/interfaces",
 		"savepersist",
 		scpCmd,
@@ -134,14 +136,17 @@ func main() {
 					session.Run(connect)
 				}()
 
-				connd:="touch /etc/.configured"
-				if err := session.Run(connd); err != nil {
+				connd = "touch /etc/.configured"
+
+			}
+
+		}
+
+		if cmdNumber == 2 {
+			if err := session.Run(cmd); err != nil {
 				fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
 			}
-
-				break
-			}
-
+			break
 		}
 
 	}
