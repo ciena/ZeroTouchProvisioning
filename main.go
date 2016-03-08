@@ -144,9 +144,6 @@ func main() {
 		}
 
 		if cmdNumber == 2 {
-			if err := session.Run(cmd); err != nil {
-				fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
-			}
 			break
 		}
 
