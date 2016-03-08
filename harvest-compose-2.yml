@@ -8,6 +8,7 @@ harvester:
         - "/var/lib/maas/dhcp:/dhcp"
         - "/etc/bind/maas:/bind"
         - "/home/ubuntu/compose-services/dhcpharvester/key:/key"
+        - "/etc/dhcp:/etc/dhcp"
     ports:
         - "8955:8955"
     command: [ "--server", "10.2.0.1", "--onosip=10.2.0.1", "--port", "955", "--apiport=8955", "--dest=-", "--key", "/key/mykey.conf", "--zone", "cord.lab", "--verify", "--timeout", "1s", "--repeat", "40s", "--quiet", "2s", "--workers", "10", "--filter", "^" ]
