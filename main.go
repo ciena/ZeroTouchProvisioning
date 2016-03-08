@@ -53,6 +53,7 @@ func main() {
 	connect := "brcm-indigo-ofdpa-ofagent --dpid=" + *dpid + " --controller=" + *onosIP
 
 	cmds := []string{"test -e /etc/.configured && echo 'found' || echo 'notFound'",
+		"test -e /etc/.connected && echo 'connected' || echo 'notConnected'",
 		"persist /etc/network/interfaces",
 		"savepersist",
 		scpCmd,
@@ -104,9 +105,7 @@ func main() {
 			session.Run(cmd) //savepersist returns error even if it succeeds (ONL bug)
 		} else if cmd == connect {
 			go func() {
-				if err := session.Run(cmd); err != nil {
-					fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
-				}
+				session.Run(cmd)
 			}()
 		} else {
 			if err := session.Run(cmd); err != nil {
@@ -116,10 +115,30 @@ func main() {
 
 		rpl := b.String()
 
-		if cmdNumber < 1 {
+		if cmdNumber == 0 {
 			fmt.Println(rpl[:5])
 			if rpl[:5] == "found" {
 				fmt.Println("Switch is already configured!")
+
+			}
+
+		}
+		if cmdNumber == 1 {
+			fmt.Println(rpl[:9])
+			if rpl[:9] == "connected" {
+				fmt.Println("Switch is already CONNECTED!")
+				break
+			} else {
+				fmt.Println("Switch is configured but not connected to ONOS, connecting now...")
+				go func() {
+					session.Run(connect)
+				}()
+
+				connd:="touch /etc/.configured"
+				if err := session.Run(connd); err != nil {
+				fmt.Println("Failed to run cmd: " + cmd + " ERROR: " + err.Error())
+			}
+
 				break
 			}
 
