@@ -98,6 +98,96 @@ def parse_rewind_binding_state(raw_str):
         raise Exception('Parse error in next binding state')
 
 
+
+
+def parse_res_fixed_address(raw_str):
+    return raw_str
+
+def parse_res_hardware(raw_str):
+    tokens = raw_str.split()
+    return tokens[1]
+
+def parse_reservation_file(res_file):
+    valid_keys = {
+        'hardware'      : parse_res_hardware,
+        'fixed-address' : parse_res_fixed_address,
+    }
+
+    res_db = {}
+    res_rec = {}
+    in_res = False
+    for line in res_file:
+        if line.lstrip().startswith('#'):
+            continue
+        tokens = line.split()
+
+        if len(tokens) == 0:
+            continue
+
+        key = tokens[0].lower()
+
+        if key == 'host':
+            if not in_res:
+                res_rec = {'hostname' : tokens[1]}
+                in_res = True
+
+            else:
+                raise Exception("Parse error in reservation file")
+        elif key == '}':
+            if in_res:
+                for k in valid_keys:
+                    if callable(valid_keys[k]):
+                        res_rec[k] = res_rec.get(k, '')
+                    else:
+                        res_rec[k] = False
+
+                hostname = res_rec['hostname']
+
+                if hostname in res_db:
+                    res_db[hostname].insert(0, res_rec)
+
+                else:
+                    res_db[hostname] = [res_rec]
+
+                res_rec = {}
+                in_res = False
+
+            else:
+                raise Exception('Parse error in reservation file')
+
+        elif key in valid_keys:
+            if in_res:
+                value = line[(line.index(key) + len(key)):]
+                value = value.strip().rstrip(';').rstrip()
+
+                if callable(valid_keys[key]):
+                    res_rec[key] = valid_keys[key](value)
+                else:
+                    res_rec[key] = True
+
+            else:
+                raise Exception('Parse error in reservation file')
+
+        else:
+            if in_res:
+                raise Exception('Parse error in reservation file')
+
+    if in_res:
+        raise Exception('Parse error in reservation file')
+
+    # Turn the leases into an array
+    results = []
+    for res in res_db:
+        results.append({
+            'client-hostname'   : res_db[res][0]['hostname'],
+            'ip_address' : res_db[res][0]['fixed-address'],
+            }) 
+    return results
+        
+
+
+
+
 def parse_leases_file(leases_file):
     valid_keys = {
         'starts':           parse_timestamp,
@@ -294,8 +384,17 @@ def harvest(options):
     leases = parse_leases_file(myfile)
     myfile.close()
     
+
+    reservations = None
+    try:
+        with open(options.reservations, 'r') as res_file:
+            reservations = parse_reservation_file(res_file)
+        res_file.close()
+    except (IOError) as e:
+        pass
+    
     now = timestamp_now()
-    report_dataset = select_active_leases(leases, now)
+    report_dataset = select_active_leases(leases, now) + reservations
     
     verified = []
     if options.verify:
@@ -462,6 +561,8 @@ def main():
     parser = OptionParser()
     parser.add_option('-l', '--leases', dest='leases', default='/dhcp/dhcpd.leases',
         help="specifies the DHCP lease file from which to harvest")
+    parser.add_option('-x', '--reservations', dest='reservations', default='/etc/dhcp/dhcpd.reservations',
+        help="specified the reservation file as ISC DHCP doesn't update the lease file for fixed addresses")
     parser.add_option('-d', '--dest', dest='dest', default='/bind/dhcp_harvest.inc',
         help="specifies the file to write the additional DNS information")
     parser.add_option('-i', '--include', dest='include', default=None,
