@@ -132,11 +132,12 @@ func main() {
 				break
 			} else {
 				fmt.Println("Switch is configured but not connected to ONOS, connecting now...")
+				connd = "touch /etc/.configured"
 				go func() {
 					session.Run(connect)
 				}()
 
-				connd = "touch /etc/.configured"
+				
 
 			}
 
