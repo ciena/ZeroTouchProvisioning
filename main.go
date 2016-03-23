@@ -107,9 +107,9 @@ func main() {
 			session.Run(cmd) //savepersist returns error even if it succeeds (ONL bug)
 		} else if cmd == connect {
 			go func() {
-			time.Sleep(TIMEOUT * time.Millisecond)
-			timeout <- true
-		}()
+				time.Sleep(TIMEOUT * time.Millisecond)
+				timeout <- true
+			}()
 			go func() {
 				fmt.Println(" RUNNING: " + connect)
 				session.Run(cmd)
