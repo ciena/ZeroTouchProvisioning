@@ -11,9 +11,10 @@ import (
 	"time"
 )
 
-// const (
-// 	onosIP = "10.0.0.1"
-// )
+const (
+	//onosIP = "10.0.0.1"
+	TIMEOUT = 3
+)
 
 func main() {
 
@@ -105,6 +106,10 @@ func main() {
 		if cmd == "savepersist" {
 			session.Run(cmd) //savepersist returns error even if it succeeds (ONL bug)
 		} else if cmd == connect {
+			go func() {
+			time.Sleep(TIMEOUT * time.Millisecond)
+			timeout <- true
+		}()
 			go func() {
 				fmt.Println(" RUNNING: " + connect)
 				session.Run(cmd)
